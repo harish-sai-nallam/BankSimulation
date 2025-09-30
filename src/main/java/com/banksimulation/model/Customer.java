@@ -1,33 +1,102 @@
 package com.banksimulation.model;
 
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 public class Customer {
 
-    private String password;
+    @NotNull
     private int customerId;
+
+
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z ]+$",
+            message = "Names can only have lowercase, uppercase alphabets and spaces")
     private String customerName;
-    private int aadharNumber;
+
+
+    @NotNull
+    @Pattern(regexp = "^[0-9]{12}$",
+            message = "Aadhaar number must be exactly 12 digits")
+    private String aadharNumber; // Changed to String
+
+
+    @NotNull
+    @Size(min = 10, max = 255, message = "Address must be between 10 and 255 characters")
     private String permanentAddress;
+
+
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z ]+$",
+            message = "State name can only contain alphabets and spaces")
     private String state;
+
+
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z ]+$",
+            message = "Country name can only contain alphabets and spaces")
     private String country;
+
+
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z ]+$",
+            message = "City name can only contain alphabets and spaces")
     private String city;
+
+
+    @NotNull
+    @Email(message = "Please provide a valid email address")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Invalid email format")
     private String email;
-    private int phoneNumber;
-    private String status;
+
+
+    @NotNull
+    @Pattern(regexp = "^[6-9][0-9]{9}$",
+            message = "Phone number must be 10 digits starting with 6, 7, 8, or 9")
+    private String phoneNumber;
+
+
+    @NotNull
+    @Pattern(regexp = "^(SINGLE|MARRIED|DIVORCED|WIDOWED)$",
+            message = "Marital status must be SINGLE, MARRIED, DIVORCED, or WIDOWED")
+    private String maritalStatus;
+
+
+    @NotNull
+    @Past(message = "Date of birth must be in the past")
     private LocalDate dob;
+
+
+    @Min(value = 18, message = "Age must be at least 18")
+    @Max(value = 120, message = "Age cannot exceed 120")
     private int age;
+    @NotNull
     private LocalDate createdOn;
+
     private LocalDate modifiedOn;
-    private char gender;
+
+
+    @NotNull
+    @Pattern(regexp = "^[MF]$", message = "Gender must be M or F")
+    private String gender;
+
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z ]+$",
+            message = "Father's name can only contain alphabets and spaces")
     private String fatherName;
+
+    @NotNull
+    @Pattern(regexp = "^[a-zA-Z ]+$",
+            message = "Mother's name can only contain alphabets and spaces")
     private String motherName;
 
 
-    public Customer(String password, int customerId, String customerName, int aadharNumber,
+
+    public Customer(String password, int customerId, String customerName, String aadharNumber,
                     String permanentAddress, String state, String country, String city, String email,
-                    int phoneNumber, String status, LocalDate dob, int age, LocalDate createdOn,
-                    LocalDate modifiedOn, char gender, String fatherName, String motherName) {
+                    String phoneNumber, String maritalStatus, LocalDate dob, int age, LocalDate createdOn,
+                    LocalDate modifiedOn, String gender, String fatherName, String motherName) {
         this.password = password;
         this.customerId = customerId;
         this.customerName = customerName;
@@ -38,7 +107,7 @@ public class Customer {
         this.city = city;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.status = status;
+        this.maritalStatus = maritalStatus;
         this.dob = dob;
         this.age = age;
         this.createdOn = createdOn;
@@ -64,7 +133,7 @@ public class Customer {
         return customerName;
     }
 
-    public int getAadharNumber() {
+    public String getAadharNumber() {
         return aadharNumber;
     }
 
@@ -88,12 +157,12 @@ public class Customer {
         return email;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
     public String getStatus() {
-        return status;
+        return maritalStatus;
     }
 
     public LocalDate getDob() {
@@ -112,7 +181,7 @@ public class Customer {
         return modifiedOn;
     }
 
-    public char getGender() {
+    public String getGender() {
         return gender;
     }
 
@@ -137,7 +206,7 @@ public class Customer {
         this.customerName = customerName;
     }
 
-    public void setAadharNumber(int aadharNumber) {
+    public void setAadharNumber(String aadharNumber) {
         this.aadharNumber = aadharNumber;
     }
 
@@ -161,12 +230,12 @@ public class Customer {
         this.email = email;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
     }
 
     public void setDob(LocalDate dob) {
@@ -185,7 +254,7 @@ public class Customer {
         this.modifiedOn = modifiedOn;
     }
 
-    public void setGender(char gender) {
+    public void setGender (String gender) {
         this.gender = gender;
     }
 

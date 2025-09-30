@@ -1,44 +1,81 @@
 package com.banksimulation.model;
-
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 public class Account {
 
+
+
     private int accountId;
+
+    @Positive(message = "Customer ID must be positive")
     private int customerId;
+
+    @NotNull(message = "Account type is required")
+    @Pattern(regexp = "SAVINGS|JOINT|BUSINESS", message = "Account type must be SAVINGS, JOINT or BUSINESS")
     private String accountType;
+
+    @NotNull(message = "Bank name is required")
+    @Size(min = 2, max = 50, message = "Bank name length must be between 2 and 50")
     private String bankName;
+
+    @NotNull(message = "Branch is required")
+    @Size(min = 2, max = 50, message = "Branch length must be between 2 and 50")
     private String branch;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Balance cannot be negative")
     private double balance;
+
+    @Pattern(regexp = "ACTIVE|INACTIVE|SUSPENDED", message = "Status must be ACTIVE, INACTIVE or SUSPENDED")
     private String status;
+
+    @PastOrPresent(message = "Created date must be past or present")
     private LocalDate createdAt;
+
+    @PastOrPresent(message = "Modified date must be past or present")
     private LocalDate modifiedAt;
+
+    @NotNull(message = "Account number is required")
+    @Pattern(regexp = "^[0-9]{9,18}$", message = "Account number must be 9 to 18 digits")
     private String accountNumber;
+
+    @NotNull(message = "IFSC code is required")
+    @Pattern(regexp = "^[A-Z]{4}0[A-Z0-9]{6}$", message = "Invalid IFSC code format")
     private String ifscCode;
+
+    @NotNull(message = "Name on account is required")
+    @Size(min = 2, max = 50, message = "Name on account length must be 2 to 50")
     private String nameOnAccount;
+
+    @Pattern(regexp = "^[6-9][0-9]{9}$", message = "Invalid phone number")
     private String phoneLinkedWithBank;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Saving amount cannot be negative")
     private double savingAmount;
 
-    public Account() {}
+    public Account(){
 
-    public Account(int accountId, int customerId, String accountType, String bankName, String branch,
-                   double balance, String status, LocalDate createdAt, LocalDate modifiedAt,
-                   String accountNumber, String ifscCode, String nameOnAccount, String phoneLinkedWithBank,
-                   double savingAmount) {
-        this.accountId = accountId;
-        this.customerId = customerId;
-        this.accountType = accountType;
-        this.bankName = bankName;
-        this.branch = branch;
-        this.balance = balance;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.accountNumber = accountNumber;
-        this.ifscCode = ifscCode;
-        this.nameOnAccount = nameOnAccount;
-        this.phoneLinkedWithBank = phoneLinkedWithBank;
+    }
+
+    public Account(double savingAmount, String phoneLinkedWithBank, String nameOnAccount, String ifscCode, String accountNumber, LocalDate modifiedAt, LocalDate createdAt, String status, double balance, String branch, String bankName, String accountType, int customerId, int accountId) {
         this.savingAmount = savingAmount;
+        this.phoneLinkedWithBank = phoneLinkedWithBank;
+        this.nameOnAccount = nameOnAccount;
+        this.ifscCode = ifscCode;
+        this.accountNumber = accountNumber;
+        this.modifiedAt = modifiedAt;
+        this.createdAt = createdAt;
+        this.status = status;
+        this.balance = balance;
+        this.branch = branch;
+        this.bankName = bankName;
+        this.accountType = accountType;
+        this.customerId = customerId;
+        this.accountId = accountId;
     }
 
     public int getAccountId() {
@@ -152,5 +189,5 @@ public class Account {
     public void setSavingAmount(double savingAmount) {
         this.savingAmount = savingAmount;
     }
-}
 
+}

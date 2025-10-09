@@ -40,7 +40,7 @@ public class Account {
     private LocalDate modifiedAt;
 
     @NotNull(message = "Account number is required")
-    @Pattern(regexp = "^[0-9]{9,18}$", message = "Account number must be 9 to 18 digits")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Account number must be of 10 digits")
     private String accountNumber;
 
     @NotNull(message = "IFSC code is required")

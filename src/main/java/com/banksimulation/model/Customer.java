@@ -8,17 +8,15 @@ public class Customer {
     @NotNull
     private int customerId;
 
-
     @NotNull
     @Pattern(regexp = "^[a-zA-Z ]+$",
             message = "Names can only have lowercase, uppercase alphabets and spaces")
     private String customerName;
 
-
     @NotNull
     @Pattern(regexp = "^[0-9]{12}$",
             message = "Aadhaar number must be exactly 12 digits")
-    private String aadharNumber; // Changed to String
+    private String aadharNumber;
 
 
     @NotNull
@@ -65,12 +63,15 @@ public class Customer {
 
     @NotNull
     @Past(message = "Date of birth must be in the past")
+    @Past
     private LocalDate dob;
 
 
+    @NotNull
     @Min(value = 18, message = "Age must be at least 18")
     @Max(value = 120, message = "Age cannot exceed 120")
     private int age;
+
     @NotNull
     private LocalDate createdOn;
 
@@ -93,11 +94,10 @@ public class Customer {
 
 
 
-    public Customer(String password, int customerId, String customerName, String aadharNumber,
+    public Customer( int customerId, String customerName, String aadharNumber,
                     String permanentAddress, String state, String country, String city, String email,
                     String phoneNumber, String maritalStatus, LocalDate dob, int age, LocalDate createdOn,
                     LocalDate modifiedOn, String gender, String fatherName, String motherName) {
-        this.password = password;
         this.customerId = customerId;
         this.customerName = customerName;
         this.aadharNumber = aadharNumber;
@@ -121,13 +121,10 @@ public class Customer {
     public Customer() {}
 
 
-    public String getPassword() {
-        return password;
-    }
-
     public int getCustomerId() {
         return customerId;
     }
+
 
     public String getCustomerName() {
         return customerName;
@@ -161,7 +158,7 @@ public class Customer {
         return phoneNumber;
     }
 
-    public String getStatus() {
+    public String getMaritalStatus() {
         return maritalStatus;
     }
 
@@ -191,11 +188,6 @@ public class Customer {
 
     public String getMotherName() {
         return motherName;
-    }
-
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void setCustomerId(int customerId) {
@@ -234,7 +226,7 @@ public class Customer {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setStatus(String maritalStatus) {
+    public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
     }
 

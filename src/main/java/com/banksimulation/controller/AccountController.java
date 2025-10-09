@@ -1,4 +1,7 @@
 package com.banksimulation.controller;
+
+import com.banksimulation.config.JdbcConnectionSetup;
+import com.banksimulation.exception.AccountNotFoundException;
 import com.banksimulation.model.Account;
 import com.banksimulation.repository.AccountRepo;
 import com.banksimulation.service.AccountService;
@@ -6,23 +9,38 @@ import com.banksimulation.service.serviceimpl.AccountServiceImpl;
 import com.google.protobuf.ServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
+import java.sql.Connection;
 import java.util.List;
 
-import static sun.security.timestamp.TSResponse.BAD_REQUEST;
+
 
 @Path("/account")
 public class AccountController {
     private static final Logger log= LogManager.getLogger(AccountController.class);
    private AccountService service;
+   private Connection connection;
+
    public AccountController(){
-       this.service=new AccountServiceImpl();
+       try{
+           connection= JdbcConnectionSetup.getConnection();
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
+       this.service=new AccountServiceImpl(connection);
    }
+    public AccountController(Connection connection){
+        try{
+            this.connection= connection;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        this.service=new AccountServiceImpl(connection);
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -45,29 +63,32 @@ public class AccountController {
         }
     }
     @GET
-    @Path("/{id}")
+    @Path("/{accountNumber}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccount(@PathParam("id") int accountId) {
+    public Response getAccount(@PathParam("accountNumber") String accountNumber) {
+       AccountRepo repo=new AccountRepo();
         try {
-            Account account = service.get(accountId);
+            int accountId=repo.getAccountIdUsingNumber(accountNumber);
+            Account account = service.get(accountNumber);
             return Response.ok(account).build();
-        } catch (NotFoundException e) {
+        } catch (AccountNotFoundException | NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("Error fetching account", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @DELETE
-    @Path("/{id}")
-    public Response deleteAccount(@PathParam("id") int accountId) {
-        log.info("Initiated the DELETE HTTP request for Account ID: " + accountId);
+    @Path("/{accountNumber}")
+    public Response deleteAccount(@PathParam("accountNumber") String accountNumber) {
+        log.info("Initiated the DELETE HTTP request for Account ID: " + accountNumber);
         try {
-            service.delete(accountId);
+            service.delete(accountNumber);
             return Response.noContent().build();
-        }catch (NotFoundException e) {
+        }catch (AccountNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("Error deleting account", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Server error deleting account").build();
@@ -75,17 +96,17 @@ public class AccountController {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{accountNumber}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateAccount(@PathParam("id") int accountId, @Valid Account account) {
-        log.info("PUT update accountId={}", accountId);
+    public Response updateAccount(@PathParam("accountNumber") String accountNumber, @Valid Account account) {
+       log.info("PUT update accountId={}", accountNumber);
         try {
-            service.update(accountId, account);
+            service.update(accountNumber, account);
             return Response.ok().entity("Account updated successfully").build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage()).build();
-        } catch (NotFoundException e) {
+        } catch (AccountNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
             log.error("Error updating account", e);
@@ -98,17 +119,23 @@ public class AccountController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllAccounts() {
-        try{
+        try {
 
-            List<Account> accounts=service.getAccounts();
-            if(accounts!=null && !accounts.isEmpty()) return Response.ok(accounts).build();
+            List<Account> accounts = service.getAccounts();
+            if (accounts != null && !accounts.isEmpty()) return Response.ok(accounts).build();
             else {
-               return  Response.status(Response.Status.NOT_FOUND).entity("No Accounts data were found")
-                       .build();
+                return Response.status(Response.Status.NOT_FOUND).entity("No Accounts data were found")
+                        .build();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Could not find the Acounts");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal Issue!!!").build();
         }
+    }
+
+
+    @Path("/{accountNumber}/transactions")
+    public TransactionController getTransactionController(@PathParam("accountNumber") String accountNumber) {
+        return new TransactionController(accountNumber);
     }
 }

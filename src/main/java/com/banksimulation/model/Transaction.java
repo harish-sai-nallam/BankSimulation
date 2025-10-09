@@ -1,6 +1,7 @@
 package com.banksimulation.model;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Transaction {
 
@@ -8,19 +9,25 @@ public class Transaction {
     private int transactionId;
 
     @NotNull(message = "Sender account number is required")
-    @Pattern(regexp = "^[0-9]{9,18}$", message = "Sender account number must be 9-18 digits")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Sender account number must be 9-18 digits")
     private String senderAccountNumber;
 
     @NotNull(message = "Receiver account number is required")
-    @Pattern(regexp = "^[0-9]{9,18}$", message = "Receiver account number must be 9-18 digits")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Receiver account number must be 9-18 digits")
     private String receiverAccountNumber;
+
+   // @NotNull(message = "UTR number is required")
+    @Pattern(regexp = "^UTR[A-Z0-9]{16}$",
+            message = "UTR must start with 'UTR' followed by 16 uppercase letters or digits " )
+    private String utrNumber;
+
 
     @NotNull(message = "Transaction type is required")
     @Pattern(regexp = "DEPOSIT|WITHDRAW|TRANSFER", message = "Transaction type must be DEPOSIT, WITHDRAW, or TRANSFER")
     private String transactionType;
 
     @NotNull(message = "Mode of transaction is required")
-    @Pattern(regexp = "CREDIT|DEBIT|UPI|QR_CODE", message = "Mode of transaction must be CREDIT, DEBIT, UPI, or QR_CODE")
+    @Pattern(regexp = "CREDIT|DEBIT|UPI", message = "Mode of transaction must be CREDIT, DEBIT, or UPI")
     private String modeOfTransaction;
 
     @DecimalMin(value = "0.01", inclusive = true, message = "Amount must be at least 0.01")
@@ -28,21 +35,21 @@ public class Transaction {
 
 
     @NotNull(message = "Transaction date is required")
-    private LocalDate transactionDate;
+    private LocalDateTime transactionTime;
 
 
     public Transaction() {}
 
 
     public Transaction(int transactionId, String senderAccountNumber, String receiverAccountNumber,
-                       String transactionType, String modeOfTransaction, double amount, LocalDate transactionDate) {
+                       String transactionType, String modeOfTransaction, double amount, LocalDateTime transactionDate) {
         this.transactionId = transactionId;
         this.senderAccountNumber = senderAccountNumber;
         this.receiverAccountNumber = receiverAccountNumber;
         this.transactionType = transactionType;
         this.modeOfTransaction = modeOfTransaction;
         this.amount = amount;
-        this.transactionDate = transactionDate;
+        this.transactionTime = transactionDate;
     }
 
 
@@ -70,6 +77,14 @@ public class Transaction {
         this.receiverAccountNumber = receiverAccountNumber;
     }
 
+    public String getUtrNumber() {
+        return utrNumber;
+    }
+
+    public void setUtrNumber( String utrNumber) {
+        this.utrNumber = utrNumber;
+    }
+
     public String getTransactionType() {
         return transactionType;
     }
@@ -94,12 +109,12 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public LocalDate getTransactionDate() {
-        return transactionDate;
+    public LocalDateTime getTransactionTime() {
+        return transactionTime;
     }
 
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setTransactionTime(LocalDateTime transactionTime) {
+        this.transactionTime = transactionTime;
     }
 }
 
